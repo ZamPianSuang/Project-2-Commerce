@@ -1,0 +1,56 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Create Listing{% endblock %}
+
+{% block body %}
+
+    <h5 style="margin-left: 15px;">Create Listings:</h5>
+  
+    <form action="{% url 'CreateListing' %}" method="POST" style="margin-left: 250px;">
+        {% csrf_token %}
+        <!-- Title -->
+        <div>
+            <label class="col-sm-1 h6">Title:</label>
+            <input type="text" class="form-control w-50 create" name="title" required>
+        </div>
+
+        <!-- Description -->
+        <div class="mt-2">
+            <label class="col-sm-1 h6">Description:</label>
+            <textarea class="form-control w-50 create" name="description"></textarea>
+        </div>
+
+        <!-- Bid -->
+        <div class="mt-2">
+            <label  class="col-sm-1 h6">StartBid:</label>
+            <input type="number" class="form-control w-50 create" name="startbid" min="0" step=".01" required>
+        </div>
+
+        <!-- Categories -->
+        <div class="mt-2">
+            <label  class="col-sm-1 h6">Category:</label>
+            <select class="form-select w-50 create" name="category">
+                <option selected value="1">Not Listed</option>
+                {% for cat in category %}
+                    {% if cat.category_name != "Not Listed" %}
+                        <option value="{{cat.id}}">{{cat.category_name}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Image Link -->
+        <div class="mt-2">
+            <label class="col-sm-1 h6">ImageLink:</label>
+            <input type="text" class="form-control w-50 create" name="link">
+        </div>
+
+        <!-- Submit button -->
+        <div class="form-group row mt-4">
+            <div class="col-sm-3">
+                <input type="submit" class="form-control btn btn-primary" value="Create Listing">
+            </div>
+        </div>
+    </form>
+    
+{% endblock %}

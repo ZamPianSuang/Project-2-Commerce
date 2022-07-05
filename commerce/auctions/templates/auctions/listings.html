@@ -1,0 +1,105 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %} {{listing.title}} {% endblock %}
+
+{% block body %}
+    <h3 style="margin-left: 17px; margin-bottom: 20px;">Listing: {{listing.title}}</h3>
+
+    {% if user.is_authenticated %}
+        {% if listing.creator.username != user.username %}
+            <form action="{% url 'listings' listing.id %}" method="POST">
+            {% csrf_token %}
+                {% if not watchlist %}
+                    <input type="submit" class="btn btn-outline-secondary btn-sm mb-3" value="Add to Watchlist" style="margin-left: 17px;" name="watch_form">
+                {% else %}
+                    <input type="submit" class="btn btn-outline-secondary btn-sm mb-3" value="Remove from Watchlist" style="margin-left: 17px;" name="watch_form">
+                {% endif %}
+            </form>
+        {% endif %}
+    {% endif %}
+
+    <div class="text-left" style="padding-left: 17px;">
+        <img src="{{listing.link}}" alt="{{listing.title}}" style="max-width: auto; height: 350px;">
+    </div>
+
+    <div style="padding: 15px; text-align: justify; padding-left: 17px;" class="col-xl-12 col-lg-12 col-md-12">
+        <h6 style="line-height: 1.6;">{{listing.description}}</h6>
+        <br>
+    <!-- ############################################# -->
+        {% if not user.is_authenticated %}
+            <h5 style="line-height: 1.6;"><b>${{currentbid}}</b></h5>
+            <p class="mb-3 fs-6 text-left">
+                You must login to place your bid!
+            </p>
+        {% else %}
+            <form action="{% url 'listings' listing.id %}" method="POST">
+                {% csrf_token %}
+                {% if listing.creator.username == user.username and listing.active == True%}
+                <!-- If it is the creator -->
+                    <h5 style="line-height: 1.6;">Startbid: <b>${{startbid}}</b></h5>
+                    <ul>
+                        <li>{{bidcount}} bid(s) so far.</li>
+                        <li>Current Highest bid &emsp; : <strong>${{currentbid}}</strong></li>
+                        <li>Current Highest bider &nbsp;: <strong>{{highestbider}}</strong></li>
+                    </ul>
+                    <input class="btn btn-primary mb-3" type="submit" value="Close Auction" name="bid_form">
+
+                {% else %}
+                <!-- If it is NOT the creator -->
+                    {% if listing.active == False %}
+                    <!-- If the listing is Active -->
+                        {% if listing.winner.username == user.username %}
+                        <!-- If the Winner is the current user -->
+                            <p class="mb-3 fs-5 text-center">
+                                Congratulations! You have won this Auction.<br>
+                                Unfortunately, this costs you <strong>${{currentbid}}</strong>
+                            </p>
+                        {% else %}
+                        <!-- If the Winner is NOT the current user -->
+                            <p class="mb-3">
+                                This item was auctioned at <strong>${{currentbid}}</strong><br>
+                                Winner : <strong>{{listing.winner.username}}</strong>
+                            </p>
+                        {% endif %}
+                    {% else %}
+                    <!-- If the listing is NOT Active -->
+                        <h5 style="line-height: 1.6;"><b>${{currentbid}}</b></h5>
+                        <p>{{bidcount}} bid(s) so far. Your bid will be the highest bid.</p>
+                        <input type="number" class="form-control mb-2" name="bid" min="{{minbid}}" placeholder="Bid" step=".01" required>
+                        <input class="btn btn-primary mb-3" type="submit" value="Place Bid" name="bid_form">
+                    {% endif %}
+                {% endif %}
+            </form>
+        {% endif %}
+    <!-- ############################################# -->
+        <h5><strong>Details</strong></h5>
+        <ul>
+            <li>Listed by&emsp; : {{listing.creator.username}}
+                {% if listing.creator.username == user.username %}(You){% endif %}
+            </li>
+            <li>Category&emsp;: {{listing.category.category_name}}</li>
+            <li>Created &emsp; : {{listing.date}}</li>
+        </ul>
+    </div>
+    <!-- ############################################# -->
+    <h6 style="padding-left: 17px;"><strong>Comments</strong></h6>
+    <div style="padding-left: 33px;">
+
+        {% if user.is_authenticated %}
+            <form action="{% url 'listings' listing.id %}" method="POST">
+            {% csrf_token %}
+                <textarea class="form-control w-50 mt-2 d-inline-block" value="comment" name="com" placeholder="Enter your comments" required></textarea><br>
+                <input type="submit" class="form-control w-50  btn btn-primary" value="Post" name="com_form"><br><br>
+            </form>
+        {% else %}
+            <p class="mb-3 fs-6 text-left">You must login to comment!</p><hr class="w-50">
+        {% endif %}
+
+        {% for com in comments %}
+                <p class="lh-1 d-inline-block">{{com.commenter}}</p>
+                <p class="lh-1 d-inline-block fw-light" style="margin-left: 40px; font-size: 13px;">{{com.date}}</p>
+                <p class="lh-1 w-50 mb-4" style="font-size: 15px; text-align: justify;">{{com.comments}}<hr class="w-50"></p>
+        {% endfor %}
+    </div>
+
+{% endblock %}

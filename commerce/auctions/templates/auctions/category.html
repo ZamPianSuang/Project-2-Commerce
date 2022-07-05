@@ -1,0 +1,37 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Category{% endblock %}
+
+{% block body %}
+
+    <h2 style="margin-left: 17px; margin-bottom: 20px;">Categories</h2>
+
+    {% if not cat_list %}
+        <p style="text-align: center;">This Category is empty.</p>
+    {% endif %}
+
+    {% for cate in cat_list %}
+    <a href="{% url 'listings' cate.id %}" style="text-decoration: none; color: black;">
+        <div class="container row" style="border:1px solid #ddd; margin-left: 17px; max-width: 98%;">
+            <div class="col-xl-4 col-lg-4 col-md-4 text-center" style="padding-right: 15px;">
+                <img src="{{cate.link}}" alt="{{cate.title}}" style="max-width: 100%; height:250px;">
+            </div>
+            <div style="padding: 15px; text-align: justify; padding-left: 100px;" class="col-xl-7 col-lg-7 col-md-7">
+                <h5 style="line-height: 1.6;"><b>{{cate.title}}</b></h5>
+                <h6 style="line-height: 1.6;"><b>Price: </b>${{cate.startbid}}</h6>
+                <!--<h6 style="line-height: 1.6;">{{cate.description}}</h6>-->
+                <br><br><br>
+                {% if cate.active == False %}
+                    <p class="dimmed">Status &emsp;&emsp; : Close</p>
+                {% else %}
+                    <p class="dimmed">Status &emsp;&emsp; : Open</p>
+                {% endif %}
+                <p class="dimmed">Created &emsp; : {{cate.date}}</p>
+            </div>
+        </div>
+    </a>
+    <br>
+
+    {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,12 @@
+body {
+    padding: 10px;
+    font-family: 'Poppins', sans-serif !important;
+}
+.dimmed {
+    color: grey; font-size:smaller; line-height: 0.8;
+}
+.create {
+    display: inline-block; 
+    margin-left: 30px;
+    vertical-align: top;
+}
